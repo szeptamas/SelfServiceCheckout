@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using SelfServiceCheckout.DTOs;
 using SelfServiceCheckout.Services;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SelfServiceCheckout.Controllers
@@ -21,18 +22,16 @@ namespace SelfServiceCheckout.Controllers
 
 		[HttpGet]
 		[Route("/api/v1/Stock")]
-		public ActionResult<List<Money>> GetAll()
+		public async Task<IActionResult> GetAll()
 		{
-			return _moneyService.GetAll();
+			return Ok(await _moneyService.GetAll());
 		}
 
 		[HttpPost]
 		[Route("/api/v1/Stock")]
 		public async Task<IActionResult> Add(MoneyDTO insertedMoney)
 		{
-			var result = await _moneyService.Add(insertedMoney);
-											
-			return Ok();
+			return Ok(await _moneyService.Add(insertedMoney));
 		}
 
 		[HttpPost]
@@ -42,13 +41,15 @@ namespace SelfServiceCheckout.Controllers
 			if (givenMoney.Count == 0 || price <= 0)  // input check
 				return BadRequest();
 
-			//int sumMoney = givenMoney.Sum(x => x.Value);
-			//if (sumMoney < price) // price is higher than the given money
-			//	return BadRequest();
+			int sumMoney = givenMoney.Sum(x => x.Value ?? 0);
+			if (sumMoney < price) // price is higher than the given money
+				return BadRequest();
 
-			//TODO implement cashback logic here
+			var result = _moneyService.Checkout(givenMoney, price);
+			if (result == null)
+				return (BadRequest(null));  // cannot accomplish cashback
 
-			return Ok(null);
+			return Ok(result);
 		}
 	}
 }
