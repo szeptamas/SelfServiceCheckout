@@ -10,7 +10,7 @@ using SelfServiceCheckout.Infrastructure;
 namespace SelfServiceCheckout.Migrations
 {
     [DbContext(typeof(MoneyDbContext))]
-    [Migration("20210610192931_Init")]
+    [Migration("20210611065647_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -7,10 +7,6 @@ namespace SelfServiceCheckout
 		public Guid Id { get; set; }
 		public int? Value { get; set; }
 		public string Key { get; set; }
-		public bool InStock
-		{
-			get { return InStock; }
-			set { InStock = Value == 0 ? false : true; }
-		}
+		public bool InStock { get; set; }
 	}
 }

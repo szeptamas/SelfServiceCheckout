@@ -20,7 +20,6 @@ namespace SelfServiceCheckout.Migrations
 				{
 					table.PrimaryKey("PK_Money", x => x.Id);
 				});
-
 			migrationBuilder.InsertData(
 				table: "Money",
 				columns: new[] { "Key", "Value", "InStock" },
@@ -39,6 +38,7 @@ namespace SelfServiceCheckout.Migrations
 					{ "10000", "0" , false},
 					{ "20000", "0" , false}
 				});
+
 		}
 
 		protected override void Down(MigrationBuilder migrationBuilder)
