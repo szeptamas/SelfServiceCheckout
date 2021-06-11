@@ -25,7 +25,8 @@ namespace SelfServiceCheckout.Services
 		// Add money to stock
 		public async Task<bool> Add(MoneyDTO money)
 		{
-			var result = _unitOfWork.MoneyRepository.Find(x => x.Key == money.Key.Trim())?.FirstOrDefault();
+			var stock = GetAll().Result;
+			var result = stock.Where(x => x.Key == money.Key).First();
 			result.Value += money.Value;
 
 			_unitOfWork.MoneyRepository.Update(result);
@@ -40,28 +41,30 @@ namespace SelfServiceCheckout.Services
 				return null;
 
 			// get actual stock
-			Dictionary<int, int> stock = new Dictionary<int, int>();
+			Dictionary<string, int> stock = new Dictionary<string, int>();
 			foreach (var item in st)
 			{
-				stock.Add(int.Parse(item.Key), item.Value ?? 0);
+				stock.Add(item.Key, item.Value ?? 0);
 			}
 
 			// add givenMoney to stock
 			foreach (var item in givenMoney)
 			{
-				stock.Add(int.Parse(item.Key), item.Value ?? 0);
+				stock[item.Key] = item.Value ?? 0;
 			}
 			
-			Dictionary<int, int> cashbackList = new Dictionary<int, int>();
+			Dictionary<string, int> cashbackList = new Dictionary<string, int>();
 
 			while (price > 0)
 			{
 				// get highest money in stock that is less than price
-				var maxMoney = stock.Keys.Where(x => x < price).Max();
+				var maxMoney = stock.Keys.Where(x => int.Parse(x) < price).Max();
+				if (maxMoney == null)
+					return null;
 
 				stock[maxMoney] -= 1;
-				cashbackList[maxMoney]++;
-				price -= maxMoney;
+				cashbackList[maxMoney] = 1;
+				price -= int.Parse(maxMoney);
 			}
 			if (price == 0)
 				return cashbackList.Select(x => new Money { Key = x.Key.ToString(), Value = x.Value }).ToList();

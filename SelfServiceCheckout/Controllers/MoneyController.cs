@@ -41,13 +41,13 @@ namespace SelfServiceCheckout.Controllers
 			if (givenMoney.Count == 0 || price <= 0)  // input check
 				return BadRequest();
 
-			int sumMoney = givenMoney.Sum(x => x.Value ?? 0);
-			if (sumMoney < price) // price is higher than the given money
-				return BadRequest();
+			//int sumMoney = givenMoney.Sum(x => x.Value ?? 0);
+			//if (sumMoney < price) // price is higher than the given money
+			//	return BadRequest();
 
 			var result = _moneyService.Checkout(givenMoney, price);
 			if (result == null)
-				return (BadRequest(null));  // cannot accomplish cashback
+				return (BadRequest());  // cannot accomplish cashback
 
 			return Ok(result);
 		}
